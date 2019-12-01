@@ -20,3 +20,8 @@ define('URL_ROOT', 'http://localhost/forum/');
 define('WEB_NAME', 'My Forum');
 define('WEB_CREATOR', 'Or Shalmayev');
 define('CURRENT_YEAR', date('Y'));
+
+define('USERNAME_IS_EMPTY_MSG', 'Username must be filled correctly');
+define('EMAIL_IS_EMPTY_MSG', 'Email must be filled correctly');
+define('PASSWORD_IS_EMPTY_MSG', 'Password must be filled correctly');
+define('USER_NOT_EXISTS', 'User does not exists.');
