@@ -46,7 +46,8 @@ require(dirname(__FILE__) . '/app/Database.php');
                 </nav>
             </div>
         </header>
-
+        <!-- Messages -->
+        <?php include(APP_ROOT.'/messages.php'); ?>
         <main role="main" class="inner cover">
             <?php 
             /*********| NEEDS REFACTOR |*********/

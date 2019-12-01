@@ -2,22 +2,14 @@
 define('APP_ROOT', dirname(dirname(__FILE__)));
 require(APP_ROOT.'/app/config.php');
 
-class Database{
-    private $connect;
+$options = [
+    PDO::ATTR_PERSISTENT => true,
+    PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_OBJ
+];
 
-    public function __construct()
-    {
-        try {
-
-            $this->connect = new PDO(DSN, DB_USER, DB_PASS);
-            $this->connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->connect->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-
-        } catch (\PDOException $e) {
-            die($e->getMessage());
-        }
-
-    }
+try {
+    $db = new PDO(DSN, DB_USER, DB_PASS, $options);
+} catch (\PDOException $e) {
+    die($e->getMessage());
 }
-
-$db = new Database();
