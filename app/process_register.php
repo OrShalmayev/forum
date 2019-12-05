@@ -1,9 +1,24 @@
 <?php
 // require database
-require('./Database.php');
-require('./AppHelper.php');
+
+use App\Lib\Database;
+use App\Helpers\AppHelper;
+use App\Helpers\Validator;
+
+require('lib/Database.php');
+require('helpers/AppHelper.php');
+require('helpers/Validator.php');
+
+// check for the username availablity sent by ajax
+if(isset($_POST['u']) && !empty($_POST['u']) && $_POST['action']=='check_username' ){
+    // clean the string
+    $u = AppHelper::cleanString($_POST['u']);
+    // Validate username
+    Validator::username($u);
+}
+
 // check for post and validate the the previous url was register
-if($_SERVER['REQUEST_METHOD']=='POST' && $_SERVER['HTTP_REFERER'] == $helper::URL_ROOT.'?page=register'){
+if($_SERVER['REQUEST_METHOD']=='POST' && $_SERVER['HTTP_REFERER'] == AppHelper::URL_ROOT.'?page=register' && !isset($_POST['action'])){
     $isValid = false;
     // Clean the string
     $user = [];
@@ -16,7 +31,7 @@ if($_SERVER['REQUEST_METHOD']=='POST' && $_SERVER['HTTP_REFERER'] == $helper::UR
         }
     }
     foreach ($user as $key => $value) {
-        if($helper::issetAndNotEmpty($user[$key])){
+        if(AppHelper::issetAndNotEmpty($user[$key])){
             // username email and password not empty
             // do more validations as you want ...
             $isValid = true;
@@ -24,13 +39,13 @@ if($_SERVER['REQUEST_METHOD']=='POST' && $_SERVER['HTTP_REFERER'] == $helper::UR
         }else{
             if($key=='un'){
                 $isValid = false;
-                return $helper::errorMsgRedirect('Username is not filled correctly.', 'register');
+                return AppHelper::errorMsgRedirect('Username is not filled correctly.', 'register');
             }else if($key=='e'){
                 $isValid = false;
-                return $helper::errorMsgRedirect('Email is not filled correctly.', 'register');
+                return AppHelper::errorMsgRedirect('Email is not filled correctly.', 'register');
             }else if($key=='p'){
                 $isValid = false;
-                return $helper::errorMsgRedirect('password is not filled correctly.', 'register');
+                return AppHelper::errorMsgRedirect('password is not filled correctly.', 'register');
             }
         }
     }
@@ -40,20 +55,26 @@ if($_SERVER['REQUEST_METHOD']=='POST' && $_SERVER['HTTP_REFERER'] == $helper::UR
         // after checking that all the fields are okay then insert the new user to users table
         // SQL for inserting the user
 
+        // hash the user password
+        $user['p'] = password_hash($user['p'], PASSWORD_DEFAULT);
+        // get user ip and store it in a variable
+        $user['ip'] = AppHelper::get_client_ip();
+
         // prepare the sql
-        $stmt = $db->prepare("INSERT INTO users(username, email, password) VALUES (:username, :email, :password)");
+        $stmt = Database::connect()->prepare("INSERT INTO users(username, email, password, ip) VALUES (:username, :email, :password, :ip)");
         // bind values
         $stmt->bindValue(':username', $user['un']);
         $stmt->bindValue(':email', $user['e']);
         $stmt->bindValue(':password', $user['p']);
+        $stmt->bindValue(':ip', $user['ip']);
         // then execute the sql
         $stmt->execute();
 
         //  redirect to login page with success register message.
-        return  $helper::redirect('login','Registered Successfully!');
+        return  AppHelper::redirect('login','Registered Successfully!');
     }
 
 }else{
     // user came to this file by mistake or trying to hack..
-    $helper::redirect();
+    AppHelper::redirect();
 }

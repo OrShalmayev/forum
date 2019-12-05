@@ -60,7 +60,7 @@ if($_SERVER['REQUEST_METHOD']=='POST' && $_SERVER['HTTP_REFERER']== $helper::URL
 
         }else{
             // user not found send error message that the user is not exists
-            $helper::errorMsgRedirect(USER_NOT_EXISTS, 'login')
+            $helper::errorMsgRedirect(USER_NOT_EXISTS, 'login');
         }
     }
 

@@ -1,5 +1,5 @@
 <?php 
-require(dirname(__FILE__) . '/app/Database.php');
+require('app/bootstrap.php');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,6 +14,8 @@ require(dirname(__FILE__) . '/app/Database.php');
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <!-- Fontawesome -->
     <script src="https://kit.fontawesome.com/64af342e22.js" crossorigin="anonymous"></script>
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <style>
         .bd-placeholder-img {
@@ -53,16 +55,17 @@ require(dirname(__FILE__) . '/app/Database.php');
             <?php 
             /*********| NEEDS REFACTOR |*********/
             ?>
-            <?php  if(empty($_GET)) {
-
+            <?php  if(isset($_GET) && !isset($_GET['page']) || empty($_GET['page'])) {
                 // if no parameters given in the urk then include the home.php file
                 include(APP_ROOT.'/home.php');
             }else if(isset($_GET['page']) && !empty($_GET['page'])){
                 // if 'page' parameter given
                 if(file_exists(APP_ROOT.'/'.$_GET['page'].'.php')){
                     // if the value in the page parameter exists in the public files include the file
-                    include(APP_ROOT.'/'.$_GET['page'].'.php');
+                    include_once(APP_ROOT.'/'.$_GET['page'].'.php');
                 }else{
+                    // the user is trying to manipulate the server then check if he is doing it more then 2 times if so block him
+                    $_SESSION['visitor_details']['manipulator']++;
                     // the value in the page paramter doesnt exists then redirect to home page.
                     header("Location:".URL_ROOT);
                 }
